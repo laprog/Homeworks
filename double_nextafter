@@ -1,0 +1,25 @@
+const uint64_t DOUBLE_DENORM_MIN_BITS = 1;
+const double DOUBLE_DENORM_MIN = 4.9406564584124654e-324;
+
+double nextafter(double x, double direction) {
+    if (x == direction) return direction;
+
+    if (x == 0.0) {
+        return direction > 0 ? DOUBLE_DENORM_MIN : -DOUBLE_DENORM_MIN;
+    }
+
+    union {
+        double d;
+        uint64_t u;
+    } conv;
+
+    conv.d = x;
+
+    if ((x > 0) == (direction > x)) {
+        conv.u++; 
+    } else {
+        conv.u--;
+    }
+
+    return conv.d;
+}
