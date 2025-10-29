@@ -1,0 +1,54 @@
+template <typename Key, typename Value>
+class SimpleMap {
+    struct Node {
+        Key key;
+        Value value;
+        Node* left;
+        Node* right;
+        Node(const Key& k, const Value& v) : key(k), value(v), left(nullptr), right(nullptr) {}
+    };
+
+    Node* root;
+
+    Node* insert(Node* node, const Key& key, const Value& value) {
+        if (!node) return new Node(key, value);
+        if (key < node->key) node->left = insert(node->left, key, value);
+        else if (key > node->key) node->right = insert(node->right, key, value);
+        else node->value = value;
+        return node;
+    }
+
+    Node* find(Node* node, const Key& key) const {
+        if (!node) return nullptr;
+        if (key < node->key) return find(node->left, key);
+        else if (key > node->key) return find(node->right, key);
+        return node;
+    }
+
+    void inorder(Node* node) const {
+        if (!node) return;
+        inorder(node->left);
+        std::cout << node->key << ": " << node->value << "\n";
+        inorder(node->right);
+    }
+
+    void clear(Node* node) {
+        if (!node) return;
+        clear(node->left);
+        clear(node->right);
+        delete node;
+    }
+
+public:
+    SimpleMap() : root(nullptr) {}
+    ~SimpleMap() { clear(root); }
+
+    void insert(const Key& key, const Value& value) { root = insert(root, key, value); }
+
+    Value* find(const Key& key) {
+        Node* n = find(root, key);
+        return n ? &n->value : nullptr;
+    }
+
+    void print() const { inorder(root); }
+};
